@@ -1,8 +1,6 @@
 import './Modal.css';
 import { Component } from 'react';
 import { createPortal } from 'react-dom';
-//import * as basicLightbox from 'basiclightbox'
-import PropTypes from 'prop-types';
 
 const ModalRoot = document.querySelector('#ModalRoot');
 
@@ -41,8 +39,3 @@ class Modal extends Component {
 }
 
 export default Modal;
-
-Modal.propTypes = {
-  image: PropTypes.object,
-  onClose: PropTypes.func,
-};

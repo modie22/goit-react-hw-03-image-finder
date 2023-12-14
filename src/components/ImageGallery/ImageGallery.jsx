@@ -1,5 +1,4 @@
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
-import PropTypes from 'prop-types';
 
 function ImageGallery({ items }) {
   return (
@@ -14,7 +13,3 @@ function ImageGallery({ items }) {
 }
 
 export default ImageGallery;
-
-ImageGallery.propType = {
-  items: PropTypes.array,
-};

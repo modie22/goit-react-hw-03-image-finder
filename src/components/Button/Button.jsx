@@ -1,7 +1,8 @@
+import css from './Button.module.css'
 
 const Button = ({ onClick }) => {
   return (
-    <button className="Button" onClick={onClick}>
+    <button className={css.Button} onClick={onClick}>
       Load more
     </button>
   );

@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import Notiflix from 'notiflix';
+import css from './Searchbar.module.css'
 
 class Searchbar extends Component {
   state = {
@@ -9,21 +11,29 @@ class Searchbar extends Component {
   };
 
   handleSubmit = e => {
+    const searchQuery = this.state.inputData.trim();
     e.preventDefault();
-    this.props.onSubmit(this.state.inputData);
+    if (searchQuery.trim() === '') {
+      Notiflix.Notify.info(
+        'Please, enter search word!'
+      );
+      return;
+    }
+
+    this.props.onSubmit(searchQuery);
     this.setState({ inputData: '' });
   };
   render() {
-    const { inputData } = this.state.inputData;
+    const { inputData } = this.state;
     return (
-      <header className="Searchbar">
-        <form className="SearchForm" onSubmit={this.handleSubmit}>
-          <button type="submit" className="SearchForm-button">
-            <span className="button-label">Search</span>
+      <header className={css.searchbar}>
+        <form className={css.searchForm} onSubmit={this.handleSubmit}>
+          <button type="submit" className={css.searchFormButton}>
+            Search
           </button>
 
           <input
-            className="SearchForm-input"
+            className={css.searchFormInput}
             name="inputData"
             value={inputData}
             onChange={this.onChangeInput}

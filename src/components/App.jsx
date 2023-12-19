@@ -5,7 +5,7 @@ import { fetchImages } from './fetch/fetch';
 import Searchbar from './Searchbar/Searchbar';
 import Notiflix from 'notiflix';
 import Loader from './Loader/Loader';
-
+import css from './App.module.css'
 
 class App extends Component {
   state = {
@@ -17,12 +17,13 @@ class App extends Component {
     page: 0,
   };
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.inputData !== this.state.inputData) {
+
+    if (prevState.inputData !== this.state.inputData ) {
       this.createSearch();
     }
-    else if (prevState.page !== this.state.page) {
+     else if (prevState.page !== this.state.page) {
       this.loadingNext();
-    }
+    } 
   }
   createSearch = async () => {
     try {
@@ -48,13 +49,11 @@ class App extends Component {
     }
   };
   handleSubmit = inputData => {
-    console.log(inputData.trim());
-    if ( inputData.trim() === '') {
-      Notiflix.Notify.info('You cannot search by empty field, try again.');
-      console.log(inputData)
+    if (this.state.inputData===inputData) {
+      Notiflix.Notify.info('You are already viewing images with this request.');
       return;
     }
-    this.setState({inputData: inputData.toLowerCase(), page: 1, items: [] }); 
+    this.setState({inputData: inputData.toLowerCase(), page: 1, items: [] });  
   };
   loadingNext = async () => {
     this.setState({ status: 'pending' });
@@ -76,14 +75,14 @@ class App extends Component {
     const { totalHits, status, items } = this.state;
     if (status === 'idle') {
       return (
-        <div className="App">
+        <div className={css.app}>
           <Searchbar onSubmit={this.handleSubmit} />
         </div>
       );
     }
     if (status === 'pending') {
       return (
-        <div className="App">
+        <div className={css.app}>
           <Searchbar onSubmit={this.handleSubmit} />
           <ImageGallery page={this.state.page} items={this.state.items} />
           <Loader />
@@ -93,7 +92,7 @@ class App extends Component {
     }
     if (status === 'rejected') {
       return (
-        <div className="App">
+        <div className={css.app}>
           <Searchbar onSubmit={this.handleSubmit} />
           <p>Something wrong, try later</p>
         </div>
@@ -101,7 +100,7 @@ class App extends Component {
     }
     if (status === 'resolved') {
       return (
-        <div className="App">
+        <div className={css.app}>
           <Searchbar onSubmit={this.handleSubmit} />
           <ImageGallery page={this.state.page} items={this.state.items} />
           {totalHits > 12 && totalHits > items.length && (

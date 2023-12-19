@@ -6,49 +6,61 @@ import Searchbar from './Searchbar/Searchbar';
 import Notiflix from 'notiflix';
 import Loader from './Loader/Loader';
 
-let page = 1;
 
 class App extends Component {
   state = {
-    inputData: '',
+    inputData: null,
     items: [],
 
     status: 'idle',
     totalHits: 0,
+    page: 0,
   };
-
-  handleSubmit = async inputData => {
-    page = 1;
-    if (inputData.trim() === '') {
-      Notiflix.Notify.info('You cannot search by empty field, try again.');
-      return;
-    } else {
-      try {
-        this.setState({ status: 'pending' });
-        const { totalHits, hits } = await fetchImages(inputData, page);
-        if (hits.length < 1) {
-          this.setState({ status: 'idle' });
-          Notiflix.Notify.failure(
-            'Sorry, there are no images matching your search query. Please try again.'
-          );
-        } else {
-          this.setState({
-            items: hits,
-            inputData,
-            totalHits: totalHits,
-            status: 'resolved',
-          });
-        }
-      } catch (error) {
-        this.setState({ status: 'rejected' });
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.inputData !== this.state.inputData) {
+      this.createSearch();
+    }
+    else if (prevState.page !== this.state.page) {
+      this.loadingNext();
+    }
+  }
+  createSearch = async () => {
+    try {
+      this.setState({ status: 'pending' });
+      const { totalHits, hits } = await fetchImages(
+        this.state.inputData,
+        this.state.page
+      );
+      if (hits.length < 1) {
+        this.setState({ status: 'idle' });
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      } else {
+        this.setState({
+          items: hits,
+          totalHits: totalHits,
+          status: 'resolved',
+        });
       }
+    } catch (error) {
+      this.setState({ status: 'rejected' });
     }
   };
-  onNextPage = async () => {
+  handleSubmit = inputData => {
+    console.log(inputData.trim());
+    if ( inputData.trim() === '') {
+      Notiflix.Notify.info('You cannot search by empty field, try again.');
+      console.log(inputData)
+      return;
+    }
+    this.setState({inputData: inputData.toLowerCase(), page: 1, items: [] }); 
+  };
+  loadingNext = async () => {
     this.setState({ status: 'pending' });
 
     try {
-      const { hits } = await fetchImages(this.state.inputData, (page += 1));
+      const { hits } = await fetchImages(this.state.inputData, this.state.page);
       this.setState(prevState => ({
         items: [...prevState.items, ...hits],
         status: 'resolved',
@@ -56,6 +68,9 @@ class App extends Component {
     } catch (error) {
       this.setState({ status: 'rejected' });
     }
+  };
+  onNextPage = async () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
   render() {
     const { totalHits, status, items } = this.state;
@@ -70,7 +85,7 @@ class App extends Component {
       return (
         <div className="App">
           <Searchbar onSubmit={this.handleSubmit} />
-          <ImageGallery page={page} items={this.state.items} />
+          <ImageGallery page={this.state.page} items={this.state.items} />
           <Loader />
           {totalHits > 12 && <Button onClick={this.onNextPage} />}
         </div>
@@ -88,7 +103,7 @@ class App extends Component {
       return (
         <div className="App">
           <Searchbar onSubmit={this.handleSubmit} />
-          <ImageGallery page={page} items={this.state.items} />
+          <ImageGallery page={this.state.page} items={this.state.items} />
           {totalHits > 12 && totalHits > items.length && (
             <Button onClick={this.onNextPage} />
           )}
